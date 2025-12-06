@@ -1,5 +1,4 @@
 package com.alineramos.companysuppliermanager.entity;
-package com.alineramos.company_supplier_manager.entity;
 
 
 import jakarta.persistence.*;
