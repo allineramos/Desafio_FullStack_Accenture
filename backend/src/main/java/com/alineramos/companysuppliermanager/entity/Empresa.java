@@ -1,6 +1,5 @@
 package com.alineramos.companysuppliermanager.entity;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 

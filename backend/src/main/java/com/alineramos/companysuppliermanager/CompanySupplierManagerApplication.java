@@ -1,4 +1,4 @@
-package com.alineramos.company_supplier_manager;
+package com.alineramos.companysuppliermanager;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
