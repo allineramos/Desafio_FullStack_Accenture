@@ -23,7 +23,7 @@ export interface FornecedorRequest {
     telefone: string;
     cep: string;
     rg?: string;
-    dataNascimento?: Date;
+    dataNascimento?: string;
 }
 
 export interface FornecedorResponse extends FornecedorRequest {
