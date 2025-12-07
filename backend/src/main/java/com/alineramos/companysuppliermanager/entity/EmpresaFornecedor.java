@@ -36,7 +36,7 @@ public class EmpresaFornecedor {
     @JoinColumn(name = "fornecedor_id")
     private Fornecedor fornecedor;
 
-    @Column(name = "data_cadastro" , nullable = false)
+    @Column(name = "data_cadastro", nullable = false, insertable = false, updatable = false)
     private LocalDateTime dataCadastro = LocalDateTime.now();
 
     @Column(name = "ativo" , nullable = false)
