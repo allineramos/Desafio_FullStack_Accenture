@@ -4,6 +4,12 @@ import { fornecedorApi } from "../api/fornecedorApi";
 import { vinculoApi } from "../api/vinculoApi";
 import type { EmpresaResponse, FornecedorResponse } from "../types";
 
+import { useEffect, useState, useRef } from "react";
+import { empresaApi } from "../api/empresaApi";
+import { fornecedorApi } from "../api/fornecedorApi";
+import { vinculoApi } from "../api/vinculoApi";
+import type { EmpresaResponse, FornecedorResponse } from "../types";
+
 export default function Vinculos() {
   const [empresas, setEmpresas] = useState<EmpresaResponse[]>([]);
   const [empresaSelecionada, setEmpresaSelecionada] = useState<EmpresaResponse | null>(null);
