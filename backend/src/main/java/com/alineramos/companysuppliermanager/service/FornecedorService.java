@@ -53,7 +53,7 @@ public class FornecedorService {
         String c = cpfCnpj == null ? "" : cpfCnpj;
 
         return fornecedorRepository
-                .findByAtivoTrueAndNomeContainingIgnoreCaseAndCpfCnpjContaining(n, c)
+                .findByAtivoTrueAndNomeContainingIgnoreCaseAndCpfCnpjContainingOrderByNomeAsc(n, c)
                 .stream().map(this::toResponse).toList();
     }
 
@@ -114,7 +114,7 @@ public class FornecedorService {
         }
     }
 
-    private FornecedorResponse toResponse(Fornecedor f) {
+    public FornecedorResponse toResponse(Fornecedor f) {
         return FornecedorResponse.builder()
                 .id(f.getId())
                 .tipoPessoa(f.getTipoPessoa())

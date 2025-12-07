@@ -30,7 +30,6 @@ export default function FornecedorForm({ fornecedor, onClose, onSaved }: Props) 
     setForm((f) => ({ ...f, [key]: value }));
   }
 
-  // limpar campos PF quando trocar pra PJ
   useEffect(() => {
     if (form.tipoPessoa === "PJ") {
       setForm((f) => ({ ...f, rg: "", dataNascimento: "" }));
@@ -81,7 +80,6 @@ export default function FornecedorForm({ fornecedor, onClose, onSaved }: Props) 
 
         {erro && <p className="text-red-400">{erro}</p>}
 
-        {/* toggle PF/PJ */}
         <div className="flex gap-2">
           <button
             type="button"

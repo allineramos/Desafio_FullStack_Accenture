@@ -65,17 +65,5 @@ public class EmpresaController {
                 .build()
         ).toList();
     }
-
-    @PostMapping("/{empresaId}/fornecedores/{fornecedorId}")
-    public void vincular(@PathVariable Long empresaId,
-                         @PathVariable Long fornecedorId) {
-        empresaFornecedorService.vincular(empresaId, fornecedorId);
-    }
-
-    @DeleteMapping("/{empresaId}/fornecedores/{fornecedorId}")
-    public void desvincular(@PathVariable Long empresaId,
-                            @PathVariable Long fornecedorId) {
-        empresaFornecedorService.desvincular(empresaId, fornecedorId);
-    }
 }
 

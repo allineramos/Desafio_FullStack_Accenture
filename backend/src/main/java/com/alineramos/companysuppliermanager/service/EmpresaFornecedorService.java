@@ -48,7 +48,7 @@ public class EmpresaFornecedorService {
     }
 
     public List<Fornecedor> listarFornecedoresDaEmpresa(Long empresaId) {
-        return repo.findAllByEmpresaIdAndAtivoTrue(empresaId).stream()
+        return repo.findAllByEmpresaIdAndAtivoTrueOrderByFornecedorNomeAsc(empresaId).stream()
                 .map(EmpresaFornecedor::getFornecedor)
                 .toList();
     }

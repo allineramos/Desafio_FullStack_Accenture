@@ -12,7 +12,7 @@ public interface FornecedorRepository extends JpaRepository<Fornecedor, Long> {
 
     Optional<Fornecedor> findByCpfCnpj(String cpfCnpj);
 
-    List<Fornecedor> findByAtivoTrueAndNomeContainingIgnoreCaseAndCpfCnpjContaining(
+    List<Fornecedor> findByAtivoTrueAndNomeContainingIgnoreCaseAndCpfCnpjContainingOrderByNomeAsc(
             String nome, String cpfCnpj
     );
 }

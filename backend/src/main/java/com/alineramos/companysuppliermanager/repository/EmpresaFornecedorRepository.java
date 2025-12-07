@@ -11,4 +11,5 @@ public interface EmpresaFornecedorRepository extends JpaRepository<EmpresaFornec
     Optional<EmpresaFornecedor> findByEmpresaIdAndFornecedorId(Long empresaId, Long fornecedorId);
 
     List<EmpresaFornecedor> findAllByEmpresaIdAndAtivoTrue(Long empresaId);
+    List<EmpresaFornecedor> findAllByEmpresaIdAndAtivoTrueOrderByFornecedorNomeAsc(Long empresaId);
 }

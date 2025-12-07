@@ -14,7 +14,6 @@ export default function Fornecedores() {
   const [abrirForm, setAbrirForm] = useState(false);
   const [editando, setEditando] = useState<FornecedorResponse | null>(null);
 
-  // guardamos um timer entre digitações
   const debounceRef = useRef<number | null>(null);
 
   async function carregar(nome?: string, cpfCnpj?: string) {
@@ -30,12 +29,10 @@ export default function Fornecedores() {
     }
   }
 
-  // primeira carga sem filtro
   useEffect(() => {
     carregar();
   }, []);
-
-  // 🔥 debounce: toda vez que filtro mudar, espera 400ms e busca
+  //espera parar de digitar e realiza a busca
   useEffect(() => {
     if (debounceRef.current) {
       window.clearTimeout(debounceRef.current);
@@ -45,7 +42,6 @@ export default function Fornecedores() {
       const nome = filtroNome.trim();
       const cpf = filtroCpfCnpj.trim();
 
-      // se ambos vazios, lista tudo
       if (!nome && !cpf) {
         carregar();
         return;
@@ -74,7 +70,7 @@ export default function Fornecedores() {
   async function onDeletar(id: number) {
     if (!confirm("Deseja desativar este fornecedor?")) return;
     await fornecedorApi.deletar(id);
-    // recarrega respeitando filtros atuais
+
     const nome = filtroNome.trim();
     const cpf = filtroCpfCnpj.trim();
     carregar(nome || undefined, cpf || undefined);
@@ -83,7 +79,6 @@ export default function Fornecedores() {
   function limparFiltro() {
     setFiltroNome("");
     setFiltroCpfCnpj("");
-    // não precisa chamar carregar() aqui porque o useEffect já vai disparar
   }
 
   const fornecedoresOrdenados = [...fornecedores].sort((a, b) =>
@@ -103,7 +98,6 @@ export default function Fornecedores() {
         </button>
       </header>
 
-      {/* filtros (auto-search) */}
       <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 flex flex-col md:flex-row gap-3 md:items-end">
         <div className="flex-1">
           <label className="text-sm text-zinc-300">Nome</label>
