@@ -8,8 +8,13 @@ import com.alineramos.companysuppliermanager.exception.NotFoundException;
 import com.alineramos.companysuppliermanager.repository.EmpresaRepository;
 import com.alineramos.companysuppliermanager.service.CepService;
 import com.alineramos.companysuppliermanager.service.cep.CepResponse;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,13 +47,6 @@ public class EmpresaService {
                 .build();
 
         return toResponse(empresaRepository.save(e));
-    }
-
-    public List<EmpresaResponse> listar(){
-        return empresaRepository.findAll().stream()
-                .filter(Empresa::getAtivo)
-                .map(this::toResponse)
-                .toList();
     }
 
     public EmpresaResponse buscar(Long id) {
@@ -103,5 +101,16 @@ public class EmpresaService {
                 .bairro(e.getBairro())
                 .ativo(e.getAtivo())
                 .build();
+    }
+
+    public Page<EmpresaResponse> listar(String nome, String cnpj, int page, int size) {
+    String n = nome == null ? "" : nome;
+    String c = cnpj == null ? "" : cnpj;
+
+    Pageable pageable = PageRequest.of(page, size, Sort.by("nomeFantasia").ascending());
+
+    return empresaRepository
+            .findByAtivoTrueAndNomeFantasiaContainingIgnoreCaseAndCnpjContaining(n, c, pageable)
+            .map(this::toResponse);
     }
 }

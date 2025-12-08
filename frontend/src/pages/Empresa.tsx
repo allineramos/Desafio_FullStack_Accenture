@@ -1,31 +1,64 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { empresaApi } from "../api/empresaApi";
 import type { EmpresaResponse } from "../types";
 import EmpresaForm from "./EmpresaForm";
+
 
 export default function Empresas() {
   const [empresas, setEmpresas] = useState<EmpresaResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [filtroNome, setFiltroNome] = useState("");
+  const [filtroCnpj, setFiltroCnpj] = useState("");
+
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const size = 10;
+
+  const debounceRef = useRef<number | null>(null);
+
   const [abrirForm, setAbrirForm] = useState(false);
   const [editando, setEditando] = useState<EmpresaResponse | null>(null);
 
-  async function carregar() {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await empresaApi.listar();
-      setEmpresas(data);
-    } catch (e: any) {
-      setError("Erro ao carregar empresas");
-    } finally {
-      setLoading(false);
-    }
+  async function carregar(p: number = page) {
+  try {
+    setLoading(true);
+    setError(null);
+
+    const res = await empresaApi.listar(
+      filtroNome.trim() || undefined,
+      filtroCnpj.trim() || undefined,
+      p,
+      size
+    );
+
+    setEmpresas(res.content ?? []);
+    setTotalPages(res.totalPages ?? 0);
+    setPage(res.number ?? p);
+
+  } catch {
+    setError("Erro ao carregar empresas");
+  } finally {
+    setLoading(false);
   }
+}
 
   useEffect(() => {
-    carregar();
+    carregar(0);
   }, []);
+
+  useEffect(() => {
+  if (debounceRef.current) window.clearTimeout(debounceRef.current);
+
+  debounceRef.current = window.setTimeout(() => {
+    carregar(0); // sempre volta pra primeira página ao filtrar
+  }, 400);
+
+  return () => {
+    if (debounceRef.current) window.clearTimeout(debounceRef.current);
+  };
+}, [filtroNome, filtroCnpj]);
 
   function onNovo() {
     setEditando(null);
@@ -47,6 +80,40 @@ export default function Empresas() {
     <div className="space-y-6">
       <header className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Empresas</h2>
+
+        <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 flex flex-col md:flex-row gap-3 md:items-end">
+          <div className="flex-1">
+            <label className="text-sm text-zinc-300">Nome Fantasia</label>
+            <input
+              className="w-full bg-zinc-950 border border-zinc-700 rounded-lg p-2 mt-1"
+              placeholder="Buscar por nome..."
+              value={filtroNome}
+              onChange={(e) => setFiltroNome(e.target.value)}
+            />
+          </div>
+
+          <div className="flex-1">
+            <label className="text-sm text-zinc-300">CNPJ</label>
+            <input
+              className="w-full bg-zinc-950 border border-zinc-700 rounded-lg p-2 mt-1"
+              placeholder="Buscar por CNPJ..."
+              value={filtroCnpj}
+              onChange={(e) => setFiltroCnpj(e.target.value)}
+            />
+          </div>
+
+          <button
+            onClick={() => {
+              setFiltroNome("");
+              setFiltroCnpj("");
+              carregar(0);
+            }}
+            className="px-4 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700"
+          >
+            Limpar
+          </button>
+        </div>
+
         <button
           onClick={onNovo}
           className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg fonr-medium">
@@ -90,9 +157,31 @@ export default function Empresas() {
                   </button>
                 </div>
               </div>
-          </div>
+          </div>        
         ))}
 
+      </div>
+
+      <div className="flex items-center justify-center gap-2 mt-6">
+        <button
+          disabled={page === 0}
+          onClick={() => setPage((p) => p - 1)}
+          className="px-3 py-2 rounded bg-zinc-800 disabled:opacity-40"
+        >
+          Anterior
+        </button>
+
+        <span className="text-sm text-zinc-300">
+          Página {page + 1} de {totalPages}
+        </span>
+
+        <button
+          disabled={page + 1 >= totalPages}
+          onClick={() => setPage((p) => p + 1)}
+          className="px-3 py-2 rounded bg-zinc-800 disabled:opacity-40"
+        >
+          Próxima
+        </button>
       </div>
 
       {abrirForm && (

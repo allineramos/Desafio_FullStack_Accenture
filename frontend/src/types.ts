@@ -35,3 +35,10 @@ export interface FornecedorResponse extends FornecedorRequest {
     ativo: boolean;
 }
 
+export type PageResponse<T> = {
+  content: T[];
+  totalPages: number;
+  number: number; // página atual
+  totalElements: number;
+};
+

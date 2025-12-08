@@ -9,6 +9,7 @@ import com.alineramos.companysuppliermanager.service.EmpresaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -27,8 +28,12 @@ public class EmpresaController {
     }
 
     @GetMapping
-    public List<EmpresaResponse> listar() {
-        return empresaService.listar();
+    public Page<EmpresaResponse> listar(
+            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) String cnpj,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return empresaService.listar(nome, cnpj, page, size);
     }
 
     @GetMapping("/{id}")

@@ -40,16 +40,9 @@ export default function Navbar() {
                         }
                     >
                         Fornecedores
+
                     </NavLink>
 
-                    <NavLink
-                        to="/consulta"
-                        className={({ isActive }) =>
-                            `${linkBase} ${isActive ? linkActive : linkInactive}`
-                        }
-                    >
-                        Consulta
-                    </NavLink>
 
                     <NavLink
                         to="/vinculos"

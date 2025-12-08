@@ -24,8 +24,8 @@ export default function Vinculos() {
 
   useEffect(() => {
     (async () => {
-      const list = await empresaApi.listar();
-      setEmpresas(list);
+      const res = await empresaApi.listar();
+setEmpresas(res.content ?? []);
     })();
   }, []);
 

@@ -1,9 +1,24 @@
 import { api} from "./axios";
-import type { EmpresaRequest, EmpresaResponse } from "../types";
+import type { EmpresaRequest, EmpresaResponse , PageResponse} from "../types";
+
+type Page<T> = {
+    content: T[];
+    totalElements: number;
+    totalPages: number;
+    number: number;
+    size: number;
+};
 
 export const empresaApi = {
-    listar: async (): Promise<EmpresaResponse[]> => {
-        const { data} = await api.get<EmpresaResponse[]>("/empresas");
+    listar: async (
+        nome?: string,
+        cnpj?: string,
+        page = 0,
+        size = 10
+    ): Promise<PageResponse<EmpresaResponse>> => {
+        const { data } = await api.get("/empresas", {
+        params: { nome, cnpj, page, size }
+     });
         return data;
     },
 
