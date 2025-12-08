@@ -43,3 +43,35 @@ CREATE TABLE empresa_fornecedor (
 	ativo BOOLEAN NOT NULL DEFAULT true,
 	CONSTRAINT uk_empresa_fornecedor UNIQUE (empresa_id, fornecedor_id)
 );
+
+INSERT INTO empresa (cnpj, nome_fantasia, email ,telefone, cep, uf, cidade, logradouro, bairro, ativo)
+VALUES
+('11222333000181', 'InovaTech Soluções S.A.', 'inovatech@inovatech.com','1133334444', '01001000', 'SP', 'São Paulo', 'Praça da Sé', 'Sé', true),
+
+('99888777000155', 'Paraná Logística LTDA', 'paranalog@paranalog.com','4132221100', '80010000', 'PR', 'Curitiba', 'Rua XV de Novembro', 'Centro', true),
+
+('55444333000199', 'Global Services ME', 'global@global.com' , '2133332211', '20040002', 'RJ', 'Rio de Janeiro', 'Rua da Quitanda', 'Centro', true);
+
+INSERT INTO fornecedor
+(tipo_pessoa, cpf_cnpj, nome, email, telefone, cep, uf, cidade, logradouro, bairro, rg, data_nascimento, ativo)
+VALUES
+-- PF maior de idade (ok pra qualquer empresa)
+('PF', '12345678901', 'Maria Silva', 'maria@email.com', '11999998888',
+ '01001000', 'SP', 'São Paulo', 'Praça da Sé', 'Sé',
+ '11223344', '2000-05-10', true),
+
+-- PF maior de idade (ok pra PR)
+('PF', '98765432100', 'João Pereira', 'joao@email.com', '41988887777',
+ '80010000', 'PR', 'Curitiba', 'Rua XV de Novembro', 'Centro',
+ '55667788', '1995-09-21', true),
+
+-- PF menor de idade (vai servir pra testar regra PR bloqueando vínculo)
+('PF', '11122233344', 'Ana Menor', 'ana@email.com', '11977776666',
+ '01001000', 'SP', 'São Paulo', 'Praça da Sé', 'Sé',
+ '99887766', '2010-04-15', true),
+
+-- PJ
+('PJ', '44556677000122', 'Papelaria Central LTDA', 'contato@papelaria.com', '1132110000',
+ '01001000', 'SP', 'São Paulo', 'Praça da Sé', 'Sé',
+ NULL, NULL, true);
+
