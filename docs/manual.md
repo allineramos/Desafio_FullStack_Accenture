@@ -16,7 +16,7 @@ Antes de executar o backend, é necessário criar o banco e as tabelas no Postgr
 
    ```sql
    CREATE DATABASE desafioAccenture;
-````
+   ```
 
 2. **Conecte-se ao banco e crie as tabelas**
 
@@ -98,11 +98,6 @@ Antes de executar o backend, é necessário criar o banco e as tabelas no Postgr
     '01001000', 'SP', 'São Paulo', 'Praça da Sé', 'Sé',
     NULL, NULL, true);
 
-   INSERT INTO empresa_fornecedor (empresa_id, fornecedor_id, data_cadastro, ativo)
-   VALUES
-   (2, 1, now(), true),
-   (3, 4, now(), true),
-   (3, 2, now(), true);
    ```
 
 ✅ Após esses passos, o banco estará pronto para uso pelo backend.
