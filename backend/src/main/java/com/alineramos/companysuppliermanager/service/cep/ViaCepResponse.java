@@ -1,23 +1,18 @@
 package com.alineramos.companysuppliermanager.service.cep;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-
 @JsonIgnoreProperties(ignoreUnknown = true)
-
-public class CepResponse {
-
+public class ViaCepResponse {
     private String cep;
     private String uf;
-    private String cidade;
+    private String localidade;
     private String bairro;
-
-    @JsonProperty("logradouro")
     private String logradouro;
+    private Boolean erro;
 }
