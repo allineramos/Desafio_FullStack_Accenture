@@ -10,7 +10,7 @@ export default function Navbar() {
     return (
         <header className="srickt top-0 z-10 bg-zinc-950/80 background-blur border-b border-zinc-800">
             <div className="mx-auto max-w-5xl px-4 py-3 flex items-center justify-between">
-                <h1 className="text-lg font-bold text-purple-400">
+                <h1 className="text-2xl md:text-3xl font-bold text-purple-400">
                     GestãoCorp
                 </h1>
 

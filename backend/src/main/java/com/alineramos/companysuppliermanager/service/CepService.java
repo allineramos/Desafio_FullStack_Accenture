@@ -1,15 +1,21 @@
 package com.alineramos.companysuppliermanager.service;
 
+import java.util.List;
+
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
 import com.alineramos.companysuppliermanager.exception.ValidationException;
 import com.alineramos.companysuppliermanager.service.cep.CepResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.*;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -29,8 +35,7 @@ public class CepService {
         if (respCepLa != null && respCepLa.getUf() != null) {
             return respCepLa;
         }
-
-        // 2) fallback ViaCEP (mais estável). Campos uf/localidade/logradouro/bairro. :contentReference[oaicite:0]{index=0}
+        // 2) tenta ViaCEP como fallback
         CepResponse respViaCep = consultarViaCep(cepLimpo);
         if (respViaCep != null && respViaCep.getUf() != null) {
             return respViaCep;
@@ -41,7 +46,7 @@ public class CepService {
 
     private CepResponse consultarCepLa(String cep) {
         try {
-            String url = "https://cep.la/api/" + cep; // HTTPS é mais confiável
+            String url = "https://cep.la/api/" + cep;
 
             HttpHeaders headers = new HttpHeaders();
             headers.setAccept(List.of(MediaType.APPLICATION_JSON));
@@ -56,7 +61,6 @@ public class CepService {
 
             JsonNode json = objectMapper.readTree(bodyStr);
 
-            // cep.la pode devolver array OU objeto
             JsonNode node = json.isArray() ? json.get(0) : json;
 
             if (node == null || node.get("uf") == null) return null;
@@ -70,7 +74,7 @@ public class CepService {
             return c;
 
         } catch (Exception e) {
-            return null; // deixa o fallback cuidar
+            return null;
         }
     }
 
@@ -91,7 +95,6 @@ public class CepService {
             CepResponse c = new CepResponse();
             c.setCep(getText(node, "cep"));
             c.setUf(getText(node, "uf"));
-            // ViaCEP usa "localidade" no lugar de "cidade" :contentReference[oaicite:1]{index=1}
             c.setCidade(getText(node, "localidade"));
             c.setLogradouro(getText(node, "logradouro"));
             c.setBairro(getText(node, "bairro"));
