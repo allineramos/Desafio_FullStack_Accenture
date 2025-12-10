@@ -136,14 +136,6 @@ export default function FornecedorForm({ fornecedor, onClose, onSaved }: Props) 
         <h3 className="text-xl font-bold">
           {fornecedor ? "Editar fornecedor" : "Novo fornecedor"}
         </h3>
-          <button
-            onClick={onClose}
-            className="text-zinc-400 hover:text-zinc-100 text-2xl leading-none"
-            aria-label="Fechar"
-            title="Fechar"
-          >
-            ×
-          </button>
 
         {erro && <p className="text-red-400">{erro}</p>}
 
@@ -260,14 +252,14 @@ export default function FornecedorForm({ fornecedor, onClose, onSaved }: Props) 
         <div className="flex justify-end gap-2 pt-2">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700"
+            className="flex-1 px-4 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700"
           >
             Cancelar
           </button>
           <button
             onClick={salvar}
             disabled={salvando}
-            className="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 disabled:opacity-60"
+            className="flex-1 px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 disabled:opacity-60"
           >
             {salvando ? "Salvando..." : "Salvar"}
           </button>
