@@ -51,7 +51,7 @@ O sistema conta com **backend em Java** e **frontend em React**, realizando cada
 - 📄 Listagem de empresas cadastrados
 - ✏️ Edição de empresas
 - 🗑️ Exclusão de empresas
-- 
+  
 📌 **Fornecedores**
 - ➕ Cadastro de fornecedor **PF ou PJ**
 - 📄 Listagem de fornecedores cadastrados
@@ -71,21 +71,9 @@ O sistema conta com **backend em Java** e **frontend em React**, realizando cada
 
 ---
 
-## 🧭 Sobre a API de CEP
-
-O enunciado do desafio solicitava o consumo da API `http://cep.la/api`.  
-Durante o desenvolvimento, o serviço apresentou instabilidade/indisponibilidade, retornando falhas de conexão.
-
-Para manter a aderência ao enunciado e garantir o funcionamento da aplicação, foi implementada uma estratégia de **“tenta-ou-falha” (fallback)**:  
-- a aplicação **primeiro tenta consultar a API cep.la**;  
-- **se a requisição falhar**, automaticamente realiza a busca pelo CEP na **API ViaCEP**.
-
-Com isso, a regra do desafio foi respeitada e a funcionalidade de consulta de endereço permaneceu estável, mesmo diante da falha externa.
-
----
-
 ## 🗂️ Estrutura do projeto
 
 - `/backend`: API Spring Boot (controllers, services, repositories, models, DTOs).  
-- `/frontend`: aplicação React com Tailwind para interface do usuário.  
+- `/frontend`: aplicação React com Tailwind para interface do usuário.
+- `/docs`: Manual com instruções para rodar o projeto local.
 
