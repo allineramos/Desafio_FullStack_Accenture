@@ -1,5 +1,9 @@
 package com.alineramos.companysuppliermanager.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
 import com.alineramos.companysuppliermanager.dto.FornecedorRequest;
 import com.alineramos.companysuppliermanager.dto.FornecedorResponse;
 import com.alineramos.companysuppliermanager.entity.Fornecedor;
@@ -8,10 +12,8 @@ import com.alineramos.companysuppliermanager.exception.NotFoundException;
 import com.alineramos.companysuppliermanager.exception.ValidationException;
 import com.alineramos.companysuppliermanager.repository.FornecedorRepository;
 import com.alineramos.companysuppliermanager.service.cep.CepResponse;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -48,14 +50,29 @@ public class FornecedorService {
         return toResponse(fornecedorRepository.save(f));
     }
 
-    public List<FornecedorResponse> listar(String nome, String cpfCnpj) {
-        String n = nome == null ? "" : nome;
-        String c = cpfCnpj == null ? "" : cpfCnpj;
+    public Page<FornecedorResponse> listar(String nome, String cpfCnpj, Pageable pageable) {
+    Page<Fornecedor> page;
 
-        return fornecedorRepository
-                .findByAtivoTrueAndNomeContainingIgnoreCaseAndCpfCnpjContainingOrderByNomeAsc(n, c)
-                .stream().map(this::toResponse).toList();
+    boolean temNome = nome != null && !nome.isBlank();
+    boolean temCpf = cpfCnpj != null && !cpfCnpj.isBlank();
+
+    if (temNome && temCpf) {
+        page = fornecedorRepository
+                .findByAtivoTrueAndNomeContainingIgnoreCaseAndCpfCnpjContaining(
+                        nome, cpfCnpj, pageable
+                );
+    } else if (temNome) {
+        page = fornecedorRepository
+                .findByAtivoTrueAndNomeContainingIgnoreCase(nome, pageable);
+    } else if (temCpf) {
+        page = fornecedorRepository
+                .findByAtivoTrueAndCpfCnpjContaining(cpfCnpj, pageable);
+    } else {
+        page = fornecedorRepository.findByAtivoTrue(pageable);
     }
+
+    return page.map(this::toResponse);
+}
 
     public FornecedorResponse buscar(Long id) {
         return toResponse(buscarEntidadeAtiva(id));

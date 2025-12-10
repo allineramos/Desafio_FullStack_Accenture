@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { fornecedorApi } from "../api/fornecedorApi";
-import type { FornecedorResponse } from "../types";
+import type { FornecedorResponse, PageResponse } from "../types";
 import FornecedoresForm from "./FornecedoresForm";
 
 export default function Fornecedores() {
@@ -16,46 +16,52 @@ export default function Fornecedores() {
 
   const debounceRef = useRef<number | null>(null);
 
-  async function carregar(nome?: string, cpfCnpj?: string) {
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const size = 10;
+
+  async function carregar(p: number = page) {
     try {
       setLoading(true);
       setErro(null);
-      const data = await fornecedorApi.listar(nome, cpfCnpj);
-      setFornecedores(data);
-    } catch (e: any) {
+      const res: PageResponse<FornecedorResponse> = await fornecedorApi.listar(
+        filtroNome.trim() || undefined,
+        filtroCpfCnpj.trim() || undefined,
+        p, size
+      );
+
+      setFornecedores(res.content ?? []);
+      setTotalPages(res.totalPages ?? 0);
+      setPage(res.number ?? p);
+    } catch {
       setErro("Erro ao carregar fornecedores");
     } finally {
       setLoading(false);
     }
   }
+    
 
   useEffect(() => {
-    carregar();
+    carregar(0);
   }, []);
-  //espera parar de digitar e realiza a busca
+
   useEffect(() => {
-    if (debounceRef.current) {
+    carregar(page);
+  }, [page]);
+
+  useEffect(() => {
+    if (debounceRef.current)
       window.clearTimeout(debounceRef.current);
-    }
 
-    debounceRef.current = window.setTimeout(() => {
-      const nome = filtroNome.trim();
-      const cpf = filtroCpfCnpj.trim();
-
-      if (!nome && !cpf) {
-        carregar();
-        return;
-      }
-
-      carregar(nome, cpf);
+      debounceRef.current = window.setTimeout(() => {
+      carregar(0); // voltou a filtrar => volta pra página 1
     }, 400);
 
-    return () => {
-      if (debounceRef.current) {
-        window.clearTimeout(debounceRef.current);
-      }
-    };
-  }, [filtroNome, filtroCpfCnpj]);
+      return () => {
+        if (debounceRef.current) window.clearTimeout(debounceRef.current);
+        };
+      
+    }, [filtroNome, filtroCpfCnpj]);
 
   function onNovo() {
     setEditando(null);
@@ -70,15 +76,13 @@ export default function Fornecedores() {
   async function onDeletar(id: number) {
     if (!confirm("Deseja desativar este fornecedor?")) return;
     await fornecedorApi.deletar(id);
-
-    const nome = filtroNome.trim();
-    const cpf = filtroCpfCnpj.trim();
-    carregar(nome || undefined, cpf || undefined);
+    carregar();
   }
 
   function limparFiltro() {
     setFiltroNome("");
     setFiltroCpfCnpj("");
+    carregar(0);
   }
 
   const fornecedoresOrdenados = [...fornecedores].sort((a, b) =>
@@ -150,9 +154,19 @@ export default function Fornecedores() {
                 </p>
                 <p className="text-sm text-zinc-400">Email: {f.email}</p>
                 <p className="text-sm text-zinc-400">Telefone: {f.telefone}</p>
-                <p className="text-sm text-zinc-400">
-                  {f.cidade} - {f.uf}
-                </p>
+                <p className="text-sm text-zinc-400">CEP: {f.cep}</p>
+                  {f.logradouro && (
+                    <p className="text-sm text-zinc-400">{f.logradouro}</p>
+                  )}
+                  {f.bairro && (
+                    <p className="text-sm text-zinc-400">{f.bairro}</p>
+                  )}
+
+                  {(f.cidade || f.uf) && (
+                    <p className="text-sm text-zinc-400">
+                      {f.cidade} {f.uf ? `- ${f.uf}` : ""}
+                    </p>
+                  )}
 
                 {f.tipoPessoa === "PF" && f.dataNascimento && (
                   <p className="text-sm text-zinc-400">
@@ -180,15 +194,37 @@ export default function Fornecedores() {
         ))}
       </div>
 
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-6">
+          <button
+            disabled={page === 0}
+            onClick={() => setPage((p) => p - 1)}
+            className="px-3 py-2 rounded bg-zinc-800 disabled:opacity-40"
+          >
+            Anterior
+          </button>
+
+          <span className="text-sm text-zinc-300">
+            Página {page + 1} de {totalPages}
+          </span>
+
+          <button
+            disabled={page + 1 >= totalPages}
+            onClick={() => setPage((p) => p + 1)}
+            className="px-3 py-2 rounded bg-zinc-800 disabled:opacity-40"
+          >
+            Próxima
+          </button>
+        </div>
+      )}
+
       {abrirForm && (
         <FornecedoresForm
           fornecedor={editando}
           onClose={() => setAbrirForm(false)}
           onSaved={() => {
             setAbrirForm(false);
-            const nome = filtroNome.trim();
-            const cpf = filtroCpfCnpj.trim();
-            carregar(nome || undefined, cpf || undefined);
+            carregar();
           }}
         />
       )}

@@ -1,5 +1,5 @@
 import { api} from "./axios";
-import type { EmpresaRequest, EmpresaResponse , PageResponse} from "../types";
+import type { EmpresaRequest, EmpresaResponse , PageResponse, CepResponse} from "../types";
 
 type Page<T> = {
     content: T[];
@@ -40,5 +40,10 @@ export const empresaApi = {
     deletar: async (id: number): Promise<void> => {
         await api.delete(`/empresas/${id}`);
     },
+
+    consultarCep: async (cep: string): Promise<CepResponse> => {
+        const { data } = await api.get<CepResponse>(`/cep/${cep}`);
+        return data;
+    }
 };
 

@@ -45,8 +45,8 @@ export default function Empresas() {
 }
 
   useEffect(() => {
-    carregar(0);
-  }, []);
+    carregar(page);
+  }, [page]);
 
   useEffect(() => {
   if (debounceRef.current) window.clearTimeout(debounceRef.current);
@@ -141,7 +141,14 @@ export default function Empresas() {
                   <p className="text-sm text-zinc-400">Email:{e.email}</p>
                   <p className="text-sm text-zinc-400">CEP:{e.cep}</p>
                   <p className="text-sm text-zinc-400">
-                  {e.cidade} - {e.uf}</p>
+                    {e.logradouro}
+                  </p>
+                  <p className="text-sm text-zinc-400">
+                    {e.bairro}
+                  </p>
+                  <p className="text-sm text-zinc-400">
+                    {e.cidade} - {e.uf}
+                  </p>
                 </div>
 
                 <div className="flex gap-2">
