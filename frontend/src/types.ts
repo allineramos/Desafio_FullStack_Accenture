@@ -42,3 +42,11 @@ export type PageResponse<T> = {
   totalElements: number;
 };
 
+export type CepResponse = {
+  cep: string;
+  uf: string;
+  cidade: string;
+  bairro: string;
+  logradouro: string;
+};
+

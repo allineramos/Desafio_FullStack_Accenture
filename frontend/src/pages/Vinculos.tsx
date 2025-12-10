@@ -91,12 +91,18 @@ useEffect(() => {
   setLoadingBusca(true);
   setErro(null);
   try {
-    const list = await fornecedorApi.listar(nome, cpfCnpj);
+    const res = await fornecedorApi.listar(
+      nome,
+      cpfCnpj,
+      0,
+      10
+    );
 
+    const list = res.content ?? [];
     const vinculadosIds = new Set(vinculados.map((v) => v.id));
     const filtrados = list.filter((f) => !vinculadosIds.has(f.id));
 
-    setCandidatos(filtrados.slice(0, LIMITE)); // <-- limita aqui
+    setCandidatos(filtrados.slice(0, LIMITE)); 
   } catch (e: any) {
     setErro("Erro ao buscar fornecedores");
   } finally {

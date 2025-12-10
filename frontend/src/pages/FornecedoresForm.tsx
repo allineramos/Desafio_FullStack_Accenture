@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { fornecedorApi } from "../api/fornecedorApi";
 import type { FornecedorRequest, FornecedorResponse } from "../types";
 
@@ -20,6 +20,13 @@ export default function FornecedorForm({ fornecedor, onClose, onSaved }: Props) 
     dataNascimento: fornecedor?.dataNascimento ?? "",
   });
 
+  const [logradouro, setLogradouro] = useState(fornecedor?.logradouro ?? "");
+  const [bairro, setBairro] = useState(fornecedor?.bairro ?? "");
+  const [cidade, setCidade] = useState(fornecedor?.cidade ?? "");
+  const [uf, setUf] = useState(fornecedor?.uf ?? "");
+  const [cepError, setCepError] = useState<string | null>(null);
+  const [buscandoCep, setBuscandoCep] = useState(false);
+  const debounceRef = useRef<number | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [salvando, setSalvando] = useState(false);
 
@@ -36,6 +43,48 @@ export default function FornecedorForm({ fornecedor, onClose, onSaved }: Props) 
     }
   }, [form.tipoPessoa]);
 
+  useEffect(() => {
+    const cepLimpo = (form.cep || "").replace(/\D/g, "");
+
+    if (cepLimpo.length !== 8) {
+      setCepError(null);
+      setBuscandoCep(false);
+      setLogradouro("");
+      setBairro("");
+      setCidade("");
+      setUf("");
+      return;
+    }
+
+    if (debounceRef.current) window.clearTimeout(debounceRef.current);
+
+    debounceRef.current = window.setTimeout(async () => {
+      try {
+        setBuscandoCep(true);
+        setCepError(null);
+
+        const res = await fornecedorApi.consultarCep(cepLimpo);
+
+        setLogradouro(res.logradouro ?? "");
+        setBairro(res.bairro ?? "");
+        setCidade(res.cidade ?? "");
+        setUf(res.uf ?? "");
+      } catch {
+        setCepError("CEP inválido");
+        setLogradouro("");
+        setBairro("");
+        setCidade("");
+        setUf("");
+      } finally {
+        setBuscandoCep(false);
+      }
+    }, 400);
+
+    return () => {
+      if (debounceRef.current) window.clearTimeout(debounceRef.current);
+    };
+  }, [form.cep]);
+
   async function salvar() {
     try {
       setSalvando(true);
@@ -43,6 +92,11 @@ export default function FornecedorForm({ fornecedor, onClose, onSaved }: Props) 
 
       if (!form.cpfCnpj || !form.nome || !form.email || !form.telefone || !form.cep) {
         setErro("Preencha todos os campos obrigatórios.");
+        return;
+      }
+
+      if (cepError) {
+        setErro("Por favor, corrija o CEP antes de salvar.");
         return;
       }
 
@@ -57,10 +111,15 @@ export default function FornecedorForm({ fornecedor, onClose, onSaved }: Props) 
         }
       }
 
+      const payload: FornecedorRequest = {
+        ...form,
+        cep: form.cep.replace(/\D/g, ""),
+      };
+
       if (fornecedor) {
-        await fornecedorApi.atualizar(fornecedor.id, form);
+        await fornecedorApi.atualizar(fornecedor.id, payload);
       } else {
-        await fornecedorApi.criar(form);
+        await fornecedorApi.criar(payload);
       }
 
       onSaved();
@@ -77,6 +136,14 @@ export default function FornecedorForm({ fornecedor, onClose, onSaved }: Props) 
         <h3 className="text-xl font-bold">
           {fornecedor ? "Editar fornecedor" : "Novo fornecedor"}
         </h3>
+          <button
+            onClick={onClose}
+            className="text-zinc-400 hover:text-zinc-100 text-2xl leading-none"
+            aria-label="Fechar"
+            title="Fechar"
+          >
+            ×
+          </button>
 
         {erro && <p className="text-red-400">{erro}</p>}
 
@@ -130,12 +197,47 @@ export default function FornecedorForm({ fornecedor, onClose, onSaved }: Props) 
             value={form.telefone}
             onChange={(e) => update("telefone", e.target.value)}
           />
+          <div>
+            <input
+              className="w-full bg-zinc-900 border border-zinc-700 rounded-lg p-2"
+              placeholder="CEP"
+              value={form.cep}
+              onChange={(e) => update("cep", e.target.value)}
+            />
+            {buscandoCep && (
+              <p className="text-xs text-zinc-400 mt-1">Buscando CEP...</p>
+            )}
+            {cepError && (
+              <p className="text-xs text-red-400 mt-1">{cepError}</p>
+            )}
+          </div>
+
           <input
             className="w-full bg-zinc-900 border border-zinc-700 rounded-lg p-2"
-            placeholder="CEP"
-            value={form.cep}
-            onChange={(e) => update("cep", e.target.value)}
+            placeholder="Logradouro"
+            value={logradouro}
+            readOnly
           />
+          <input
+            className="w-full bg-zinc-900 border border-zinc-700 rounded-lg p-2"
+            placeholder="Bairro"
+            value={bairro}
+            readOnly
+          />
+          <div className="grid grid-cols-2 gap-3">
+            <input
+              className="w-full bg-zinc-900 border border-zinc-700 rounded-lg p-2"
+              placeholder="Cidade"
+              value={cidade}
+              readOnly
+            />
+            <input
+              className="w-full bg-zinc-900 border border-zinc-700 rounded-lg p-2"
+              placeholder="UF"
+              value={uf}
+              readOnly
+            />
+          </div>
 
           {form.tipoPessoa === "PF" && (
             <>

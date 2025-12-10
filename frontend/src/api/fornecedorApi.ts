@@ -1,13 +1,16 @@
 import { api } from "./axios";
-import type { FornecedorRequest, FornecedorResponse } from "../types";
+import type { FornecedorRequest, FornecedorResponse, PageResponse, CepResponse } from "../types";
 
 export const fornecedorApi = {
-  listar: async (nome?: string, cpfCnpj?: string): Promise<FornecedorResponse[]> => {
-    const params: any = {};
-    if (nome) params.nome = nome;
-    if (cpfCnpj) params.cpfCnpj = cpfCnpj;
-
-    const { data } = await api.get<FornecedorResponse[]>("/fornecedores", { params });
+  listar: async (
+    nome?: string,
+    cpfCnpj?: string,
+    page = 0,
+    size = 10
+  ): Promise<PageResponse<FornecedorResponse>> => {
+    const { data } = await api.get("/fornecedores", {
+      params: { nome, cpfCnpj, page, size },
+    });
     return data;
   },
 
@@ -29,4 +32,9 @@ export const fornecedorApi = {
   deletar: async (id: number): Promise<void> => {
     await api.delete(`/fornecedores/${id}`);
   },
+
+  consultarCep: async (cep: string): Promise<CepResponse> => {
+    const { data } = await api.get(`/cep/${cep}`);
+    return data;
+  }
 };
